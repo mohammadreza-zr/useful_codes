@@ -1,0 +1,484 @@
+@import "@";
+
+$backgroundColor: var(--light);
+$text-color: var(--dark);
+$font-size-base: 12px;
+$line-height: 1.5;
+$table-border-color: var(--darkgrey);
+$table-head-background-color: inherit;
+$vertical-padding: 10px;
+$horizontal-padding: 8px;
+$border-width: 1px;
+$border-color: $table-border-color;
+$border: $border-width solid $border-color;
+$cell-padding: $vertical-padding $horizontal-padding;
+$cell-margin: (-$vertical-padding) (-$horizontal-padding);
+
+@mixin tableBorder() {
+  border: $border;
+  border-right: 0;
+  border-bottom: 0;
+  border-radius: 16px;
+}
+
+.rc-table {
+  position: relative;
+  box-sizing: border-box;
+  font-size: $font-size-base;
+  line-height: $line-height;
+  border-radius: 16px;
+  overflow: auto;
+
+  &-rtl {
+    direction: rtl;
+  }
+  // ================= Global =================
+  .rc-table-content {
+    padding: 0;
+    overflow-y: auto !important;
+  }
+  table {
+    width: 100%;
+    border-spacing: 0px;
+
+    * {
+      transition: all 0.3s !important;
+    }
+
+    th {
+      border-top: none;
+      border-bottom: none;
+      text-align: center;
+      font-size: 14px;
+      font-weight: 500;
+      color: var(--darkgrey);
+    }
+  }
+
+  th,
+  td {
+    position: relative;
+    box-sizing: border-box;
+    white-space: nowrap;
+    word-break: break-word;
+    transition: box-shadow 0.3s, background 0.3s;
+    text-align: center;
+    vertical-align: middle;
+    padding: 0.7rem;
+
+    .rc-table-rtl {
+      border-right: 0;
+      border-left: $border;
+    }
+  }
+
+  // ================== Cell ==================
+  &-cell {
+    // overflow: hidden;
+
+    &-fix-left,
+    &-fix-right {
+      z-index: 1;
+    }
+
+    // &-fix-right:last-child:not(&-fix-sticky) {
+    //   border-right-color: transparent;
+    // }
+
+    .rc-table-rtl & {
+      &-fix-right:last-child {
+        border-right-color: $border-color;
+      }
+      &-fix-left:last-child {
+        border-left-color: transparent;
+      }
+    }
+
+    &-fix-left-first {
+      .rc-table-rtl & {
+        box-shadow: 1px 0 0 $border-color;
+      }
+    }
+
+    &-fix-left-first::after,
+    &-fix-left-last::after {
+      position: absolute;
+      top: 0;
+      right: -1px;
+      bottom: -1px;
+      width: 20px;
+      transform: translateX(100%);
+      transition: box-shadow 0.3s;
+      content: "";
+      pointer-events: none;
+    }
+
+    &-fix-left-all::after {
+      display: none;
+    }
+
+    &-fix-right-first,
+    &-fix-right-last {
+      box-shadow: -1px 0 0 $border-color;
+
+      .rc-table-rtl & {
+        box-shadow: none;
+      }
+
+      &::after {
+        position: absolute;
+        top: 0;
+        bottom: -1px;
+        left: -1px;
+        width: 20px;
+        transform: translateX(-100%);
+        transition: box-shadow 0.3s;
+        content: "";
+        pointer-events: none;
+      }
+    }
+
+    &-ellipsis {
+      // overflow: hidden;
+      white-space: nowrap;
+      text-overflow: ellipsis;
+
+      // Fixed first or last should special process
+      &.rc-table-cell-fix-left-first,
+      &.rc-table-cell-fix-left-last,
+      &.rc-table-cell-fix-right-first &.rc-table-cell-fix-right-last {
+        overflow: visible;
+
+        .rc-table-cell-content {
+          display: block;
+          // overflow: hidden;
+          text-overflow: ellipsis;
+        }
+      }
+    }
+
+    &-row-hover {
+      background-color: $lightgrey;
+    }
+  }
+
+  &-ping-left {
+    .rc-table-cell-fix-left-first::after,
+    .rc-table-cell-fix-left-last::after {
+      box-shadow: inset 10px 0 8px -8px green;
+    }
+  }
+
+  &-ping-right {
+    .rc-table-cell-fix-right-first::after,
+    .rc-table-cell-fix-right-last::after {
+      box-shadow: inset -10px 0 8px -8px green;
+    }
+  }
+
+  // ================= Expand =================
+  &-expand-icon-col {
+    width: 60px;
+  }
+
+  &-row-expand-icon-cell {
+    text-align: center;
+  }
+
+  // ================= Header =================
+  thead {
+    background-color: $table-head-background-color;
+
+    th {
+      text-align: center;
+      background: $table-head-background-color;
+      padding: 0.75rem;
+    }
+
+    .rc-table-cell-scrollbar::after {
+      position: absolute;
+      top: 0;
+      bottom: 0;
+      left: -1px;
+      width: 1px;
+      background: $table-head-background-color;
+      content: "";
+
+      .rc-table-rtl {
+        right: -1px;
+        left: auto;
+      }
+    }
+  }
+
+  &-header {
+    @include tableBorder();
+  }
+
+  // ================= Empty ==================
+  &-placeholder {
+    text-align: center;
+  }
+
+  // ================== Body ==================
+  tbody {
+    tr:nth-of-type(2n) {
+      background-color: rgba(0, 0, 0, 0.05);
+    }
+    tr:nth-of-type(2n + 1) {
+      background-color: transparent;
+    }
+    tr:nth-of-type(2n) td {
+      background-color: var(--light);
+    }
+    tr {
+      position: relative;
+      &:hover td {
+        background-color: var(--lightgrey);
+      }
+      &::after {
+        content: "";
+        width: 97%;
+        height: 1px;
+        background-color: $borderColor;
+        position: absolute;
+        bottom: 0;
+        right: 0;
+        left: 0;
+        margin: 0 auto;
+      }
+
+      &:last-child {
+        td {
+          border-bottom: none;
+        }
+      }
+      &:first-child {
+        &::after {
+          display: none;
+        }
+      }
+
+      td {
+        &:first-child {
+          border-radius: 0 15px 15px 0;
+        }
+        &:last-child {
+          border-radius: 15px 0 0 15px;
+        }
+      }
+
+      th {
+        background-color: $table-head-background-color;
+      }
+    }
+  }
+
+  &-content {
+    // @include tableBorder();
+  }
+
+  &-body {
+    @include tableBorder();
+    border-top: 0;
+  }
+
+  &-fixed-column &-body::after {
+    position: absolute;
+    top: 0;
+    right: 0;
+    bottom: 0;
+    z-index: 1;
+    border-right: $border;
+    content: "";
+  }
+
+  // ================= Expand =================
+  &-expanded-row {
+    .rc-table-cell {
+      box-shadow: inset 0 8px 8px -8px gray;
+    }
+
+    &-fixed {
+      box-sizing: border-box;
+      margin: $cell-margin;
+      margin-right: -$horizontal-padding - 2 * $border-width;
+      padding: $cell-padding;
+
+      &::after {
+        position: absolute;
+        top: 0;
+        right: 1px;
+        bottom: 0;
+        width: 0;
+        border-right: $border;
+        content: "";
+      }
+    }
+  }
+
+  &-row-expand-icon {
+    display: inline-block;
+    width: 16px;
+    height: 16px;
+    color: $text-color;
+    line-height: 16px;
+    text-align: center;
+    vertical-align: middle;
+    border: 1px solid currentColor;
+    cursor: pointer;
+
+    &.rc-table-row-expanded::after {
+      content: "-";
+    }
+
+    &.rc-table-row-collapsed::after {
+      content: "+";
+    }
+
+    &.rc-table-row-spaced {
+      visibility: hidden;
+    }
+  }
+
+  // ================= Title ==================
+  &-title {
+    padding: $cell-padding;
+    border: $border;
+    border-bottom: 0;
+  }
+
+  // ================= Footer =================
+  &-footer {
+    padding: $cell-padding;
+    border: $border;
+    border-top: 0;
+  }
+
+  tfoot {
+    td {
+      background: $backgroundColor;
+    }
+  }
+
+  &-summary {
+    border-top: $border;
+    border-left: $border;
+  }
+
+  // &-sticky {
+  //   &-holder {
+  //     position: sticky;
+  //     z-index: 2;
+  //   }
+  //   &-scroll {
+  //     position: sticky;
+  //     bottom: 0;
+  //     z-index: 2;
+  //     display: flex;
+  //     align-items: center;
+  //     border-top: 1px solid $border-color;
+  //     opacity: 0.6;
+  //     transition: transform 0.1s ease-in 0s;
+  //     &:hover {
+  //       transform: scaleY(1.2);
+  //       transform-origin: center bottom;
+  //     }
+  //     &-bar {
+  //       height: 8px;
+  //       background-color: $backgroundColor;
+  //       border-radius: 4px;
+  //       &:hover {
+  //         background-color: $backgroundColor;
+  //       }
+  //       &-active {
+  //         background-color: $backgroundColor;
+  //       }
+  //     }
+  //   }
+  // }
+}
+
+.expandIcon {
+  top: 50%;
+  left: 0;
+  transform: translateY(-50%);
+  cursor: pointer;
+  height: 16px;
+  width: 16px;
+  display: block;
+  position: absolute;
+  color: white;
+  border: 2px solid white;
+  border-radius: 16px;
+  text-align: center;
+  line-height: 14px;
+  box-shadow: 0 0 3px #444;
+  box-sizing: content-box;
+  background-color: #31b131;
+}
+.relative {
+  position: relative;
+}
+
+$section-padding: 0.8rem;
+$section-border: 1px solid #eee;
+.custom-table {
+  background-color: $white;
+  //padding: 1rem;
+
+  .head {
+    @include flex-row;
+    padding: $section-padding;
+
+    .page-size {
+      @include flex-row;
+      align-items: center;
+      gap: 12px;
+      margin-right: auto;
+    }
+  }
+
+  .body {
+    // position: relative;
+    margin-bottom: pxToRem(20);
+
+    .loading {
+      position: relative;
+      // background-color: transparentize($white, $amount: 0.2);
+      // position: absolute;
+      // top: 0;
+      // right: 0;
+      // bottom: 0;
+      // left: 0;
+    }
+    td:last-child {
+      overflow: inherit;
+    }
+    @media screen and (max-width: 642px) {
+      //margin-bottom: 0;
+    }
+  }
+
+  .foot {
+    @include flex-row;
+    justify-content: space-between;
+    // border: $section-border;
+    // border-top: $primary 1px solid;
+  }
+  font-size: small;
+  .options-table {
+    @media screen and (max-width: 642px) {
+      flex-wrap: wrap;
+      justify-content: center !important;
+      div {
+        max-width: 150px;
+        width: 100%;
+        margin-top: 0;
+      }
+      ul {
+        justify-content: center;
+      }
+    }
+  }
+}
