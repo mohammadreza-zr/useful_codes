@@ -201,5 +201,5 @@ func main() {
 }
 
 func t() {
-	print("this is test, other")
+	print("this is test")
 }
