@@ -199,3 +199,8 @@ func main() {
 	// Run Prettier after generating the index.ts files
 	runPrettier(directoryPath)
 }
+
+func t(body any) {
+	print("this is test print")
+	fmt.Println(body/)
+}
