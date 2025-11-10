@@ -200,6 +200,7 @@ func main() {
 	runPrettier(directoryPath)
 }
 
-func t() {
+func t(body any) {
 	print("this is test")
+	fmt.Println(body)
 }
