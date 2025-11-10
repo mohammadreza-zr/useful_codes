@@ -201,6 +201,6 @@ func main() {
 }
 
 func t(body any) {
-	print("this is test")
+	print("this is test print")
 	fmt.Println(body)
 }
