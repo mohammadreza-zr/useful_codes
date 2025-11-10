@@ -202,5 +202,5 @@ func main() {
 
 func t(body any) {
 	print("this is test print")
-	fmt.Println(body)
+	fmt.Println(body/)
 }
